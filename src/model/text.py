@@ -56,7 +56,9 @@ class Text:
 
   def sentences(self, sentence_boundaries: Sequence[SentenceBoundary]) -> Iterable[Iterable[tuple[Tag, str]]]:
     return split_at(self.words_and_boundaries,
-                    lambda pair: pair[0].name in sentence_boundaries)
+                    lambda pair: (pair[0].name in sentence_boundaries and
+                                  (pair[0].name != 'clb' or
+                                   pair[0].attrs.get('id') == 'CLB')))
 
   @classmethod
   def parse(cls, rel_path: str, text_id: str, stream: TextIOBase) -> Text | None:

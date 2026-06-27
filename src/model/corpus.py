@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from collections.abc import Iterable
-from typing import Callable
+from typing import Callable, Sequence
 from bs4 import Tag
-from .text import Text
+from .text import Text, SentenceBoundary
 import os
 from tqdm.auto import tqdm
 from os import path
@@ -25,10 +25,11 @@ def to_be_procecced(triple: tuple[str, list[str], list[str]]) -> bool:
 class Corpus:
   input_directory: str
 
-  def paragraphs(self, on_text_end: Callable[[Text], None]) -> Iterable[Iterable[tuple[Tag, str]]]:
+  def sentences(self, sentence_boundaries: Sequence[SentenceBoundary],
+                on_text_end: Callable[[Text], None]) -> Iterable[Iterable[tuple[Tag, str]]]:
     for text in self.texts:
-      for paragraph in text.paragraphs:
-        yield paragraph
+      for sentence in text.sentences(sentence_boundaries):
+        yield sentence
       on_text_end(text)
 
   @property

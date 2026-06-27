@@ -14,6 +14,8 @@ parser = ArgumentParser(prog='tag_xml.py',
 parser.add_argument('input_directory', help='A directory with XML requiring disambiguation')
 parser.add_argument('infile', help='A conllu with annotated texts')
 parser.add_argument('output_directory', help='A directory to store disambiguated XML')
+parser.add_argument('sentence_boundaries', choices=['clb', 'parsep', 'parsep_dbl'], nargs='*',
+                    help='XML elements delimiting texts spans corresponding to sentences in the CONLL-U file')
 args = parser.parse_args()
 
 corpus = Corpus(args.input_directory)
@@ -27,10 +29,12 @@ def save_text(text: Text) -> None:
     outfile = path.join(output_subdirectory, text.text_id + '.xml')
     text.store(outfile)
 
-paragraphs = filter(lambda paragraph: len(paragraph) > 0, map(list, corpus.paragraphs(save_text)))
+sentences = corpus.sentences(args.sentence_boundaries, save_text)
+without_boundaries = map(lambda sentence: filter(lambda element: element[0].name == 'w', sentence), sentences)
+nonempty_sentences = filter(lambda sentence: len(sentence) > 0, map(list, without_boundaries))
 
-for paragraph, root in zip(paragraphs, document.trees, strict=True):
-    for (word_element, line_language), token in zip(paragraph, root.token_descendants, strict=True):
+for sentence, root in zip(nonempty_sentences, document.trees, strict=True):
+    for (word_element, line_language), token in zip(sentence, root.token_descendants, strict=True):
         assert word_element.name == 'w'
         word = Word.parse(word_element, line_language)
         # if (word.transcription or '_') != token.form:

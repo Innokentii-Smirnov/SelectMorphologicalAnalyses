@@ -4,11 +4,14 @@ from collections.abc import Iterable
 from os import path
 from io import TextIOBase
 from logging import getLogger
+from typing import Literal, Sequence
 from more_itertools import split_before, split_at
 from bs4 import Tag, BeautifulSoup
 from bs4.dammit import EntitySubstitution
 from .line import Line
 from .formatter import CustomFormatter
+
+SentenceBoundary = Literal['clb', 'parsep', 'parsep_dbl']
 
 logger = getLogger(__name__)
 extension = '.xml'
@@ -45,16 +48,15 @@ class Text:
       yield line
 
   @property
-  def words_and_parseps(self) -> Iterable[tuple[Tag, str]]:
+  def words_and_boundaries(self) -> Iterable[tuple[Tag, str]]:
     for line in self.lines:
       for tag in line:
-        if tag.name in {'w', 'parsep', 'parsep_dbl'}:
+        if tag.name in {'w', 'clb', 'parsep', 'parsep_dbl'}:
           yield tag, line.language
 
-  @property
-  def paragraphs(self) -> Iterable[Iterable[tuple[Tag, str]]]:
-    return split_at(self.words_and_parseps,
-                    lambda pair: pair[0].name in {'parsep', 'parsep_dbl'})
+  def sentences(self, sentence_boundaries: Sequence[SentenceBoundary]) -> Iterable[Iterable[tuple[Tag, str]]]:
+    return split_at(self.words_and_boundaries,
+                    lambda pair: pair[0].name in sentence_boundaries)
 
   @classmethod
   def parse(cls, rel_path: str, text_id: str, stream: TextIOBase) -> Text | None:

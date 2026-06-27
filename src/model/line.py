@@ -34,6 +34,8 @@ class Line:
         line_id = cls.UNKNOWN_LINE_ID
       if 'lg' in lb.attrs:
         language = lb.attrs['lg']
+        if not isinstance(language, str):
+          raise ValueError('The attribute lg had a list as a value.')
       else:
         cls.logger.error('Line %s in %s is not marked for language.', line_id, full_path)
         language = text_lang

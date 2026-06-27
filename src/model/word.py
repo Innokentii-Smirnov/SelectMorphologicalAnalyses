@@ -42,6 +42,8 @@ class Word:
     assert tag.name == 'w'
     transliteration = tag.decode_contents()
     lang = tag.attrs.get('lg', default_lang)
+    if not isinstance(lang, str):
+      raise ValueError('The attribute lg had a list as a value.')
     if 'trans' in tag.attrs:
       transcription = tag['trans']
       assert isinstance(transcription, str)
@@ -59,6 +61,8 @@ class Word:
     for attr, value in tag.attrs.items():
       if (match := cls.MRP.fullmatch(attr)) is not None:
         number = int(match.group(1))
+        if not isinstance(value, str):
+          raise ValueError('The attribute {0} had a list as a value.'.format(attr))
         analyses[number] = value
     children = list(tag.children)
     if (len(children) > 0 and

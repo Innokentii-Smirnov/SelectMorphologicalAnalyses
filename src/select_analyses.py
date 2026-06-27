@@ -34,14 +34,19 @@ without_boundaries = map(lambda sentence: filter(lambda element: element[0].name
 nonempty_sentences = filter(lambda sentence: len(sentence) > 0, map(list, without_boundaries))
 
 for sentence, root in zip(nonempty_sentences, document.trees, strict=True):
-    for (word_element, line_language), token in zip(sentence, root.token_descendants, strict=True):
-        assert word_element.name == 'w'
-        word = Word.parse(word_element, line_language)
-        # if (word.transcription or '_') != token.form:
-        #     print(root.sent_id)
-        #     print(word.transcription)
-        #     print(token.form)
-        #     raise ValueError
-        if len(word.selections) == 0:
-            selection = token.misc['Selected']
-            word_element['mrp0sel'] = selection
+    try:
+        for (word_element, line_language), token in zip(sentence, root.token_descendants, strict=True):
+            assert word_element.name == 'w'
+            word = Word.parse(word_element, line_language)
+            # if (word.transcription or '_') != token.form:
+            #     print(root.sent_id)
+            #     print(word.transcription)
+            #     print(token.form)
+            #     raise ValueError
+            if len(word.selections) == 0:
+                selection = token.misc['Selected']
+                word_element['mrp0sel'] = selection
+    except ValueError:
+        print(root.sent_id)
+        print(root.comment)
+        raise

@@ -4,7 +4,7 @@ from collections.abc import Iterable
 from os import path
 from io import TextIOBase
 from logging import getLogger
-from typing import Literal, Sequence
+from typing import Literal, Sequence, IO
 from more_itertools import split_before, split_at
 from bs4 import Tag, BeautifulSoup
 from bs4.dammit import EntitySubstitution
@@ -61,7 +61,7 @@ class Text:
                                    pair[0].attrs.get('id') == 'CLB')))
 
   @classmethod
-  def parse(cls, rel_path: str, text_id: str, stream: TextIOBase) -> Text | None:
+  def parse(cls, rel_path: str, text_id: str, stream: IO[str]) -> Text | None:
     soup = BeautifulSoup(stream, 'xml')
     body_tag = soup.body
     if body_tag is None:

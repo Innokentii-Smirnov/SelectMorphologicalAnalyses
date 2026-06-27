@@ -4,7 +4,8 @@ from more_itertools import first
 from .selection import Selection
 from .morph import Morph, SingleMorph, MultiMorph
 from re import compile
-from bs4 import Tag, NavigableString
+from bs4 import Tag
+from bs4.element import NavigableString
 from os.path import exists
 from os import remove
 from logging import getLogger

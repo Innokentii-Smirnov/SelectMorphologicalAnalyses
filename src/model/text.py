@@ -58,7 +58,8 @@ class Text:
     return split_at(self.words_and_boundaries,
                     lambda pair: (pair[0].name in sentence_boundaries and
                                   (pair[0].name != 'clb' or
-                                   pair[0].attrs.get('id') == 'CLB')))
+                                   pair[0].attrs.get('id') == 'CLB' or
+                                   pair[0].attrs.get('id', '').isdigit())))
 
   @classmethod
   def parse(cls, rel_path: str, text_id: str, stream: IO[str]) -> Text | None:

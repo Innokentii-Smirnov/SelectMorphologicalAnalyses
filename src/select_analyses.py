@@ -49,4 +49,6 @@ for sentence, root in zip(nonempty_sentences, document.trees, strict=True):
     except ValueError:
         print(root.sent_id)
         print(root.comment)
+        print(len(sentence))
+        print(len(root.token_descendants))
         raise
